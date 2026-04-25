@@ -1,23 +1,72 @@
 <project
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                        https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.examples</groupId>
     <artifactId>inventory</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Inventory Management</name>
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
         <junit.jupiter.version>5.11.0</junit.jupiter.version>
+        <junit.version>4.13.2</junit.version>
         <assertj.version>3.26.3</assertj.version>
+        <assertj.swing.version>3.17.1</assertj.swing.version>
         <mockito.version>5.11.0</mockito.version>
+        <mongo.driver.version>3.12.14</mongo.driver.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
+        <logback.version>1.5.18</logback.version>
+        <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.5.5</maven.surefire.plugin.version>
+        <maven.failsafe.plugin.version>3.5.5</maven.failsafe.plugin.version>
+        <build.helper.maven.plugin.version>3.6.1</build.helper.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
+        <pitest.maven.plugin.version>1.17.2</pitest.maven.plugin.version>
+        <pitest.junit5.plugin.version>1.2.1</pitest.junit5.plugin.version>
+        <sonar.coverage.exclusions>
+            **/model/*.*,
+            **/InventorySwingApp.*
+        </sonar.coverage.exclusions>
+        <sonar.tests>
+            ${project.basedir}/src/test/java,
+            ${project.basedir}/src/it/java,
+            ${project.basedir}/src/e2e/java
+        </sonar.tests>
+        <sonar.junit.reportPaths>
+            ${project.build.directory}/surefire-reports,
+            ${project.build.directory}/failsafe-reports
+        </sonar.junit.reportPaths>
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>${mongo.driver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
@@ -28,26 +77,59 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-swing-junit</artifactId>
+            <version>${assertj.swing.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <useModulePath>false</useModulePath>
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
-            <!-- Professor pattern: add extra test folders (we add them now, even if empty) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                        <exclude>**/*E2E.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${build.helper.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>add-test-sources</id>
@@ -64,10 +146,10 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Professor pattern: failsafe is present early (IT/E2E later) -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>${maven.failsafe.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>default-it</id>
@@ -79,6 +161,9 @@
                             <includes>
                                 <include>**/*IT.java</include>
                             </includes>
+                            <excludes>
+                                <exclude>**/*E2E.java</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -100,4 +185,73 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>jacoco</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.maven.plugin.version}</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/model/*.*</exclude>
+                                <exclude>**/InventorySwingApp.*</exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>pit</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>${pitest.maven.plugin.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.pitest</groupId>
+                                <artifactId>pitest-junit5-plugin</artifactId>
+                                <version>${pitest.junit5.plugin.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <targetClasses>
+                                <param>com.examples.inventory.service.*</param>
+                                <param>com.examples.inventory.repository.*</param>
+                                <param>com.examples.inventory.repository.mongo.*</param>
+                            </targetClasses>
+                            <targetTests>
+                                <param>com.examples.inventory.*</param>
+                            </targetTests>
+                            <excludedClasses>
+                                <param>com.examples.inventory.model.*</param>
+                                <param>com.examples.inventory.app.swing.InventorySwingApp</param>
+                            </excludedClasses>
+                            <timestampedReports>false</timestampedReports>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>mutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
