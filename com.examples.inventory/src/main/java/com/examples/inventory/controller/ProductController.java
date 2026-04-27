@@ -14,6 +14,10 @@ public class ProductController {
 		this.productRepository = productRepository;
 	}
 
+	public void allProducts() {
+		productView.showAllProducts(productRepository.findAll());
+	}
+
 	public void newProduct(Product product) {
 		Product existingProduct = productRepository.findById(product.getId());
 		if (existingProduct != null) {
