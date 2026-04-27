@@ -99,4 +99,27 @@ public class ProductControllerTest {
 			.showErrorProductNotFound("No existing product with id 1", product);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
+
+	@Test
+	public void testUpdateProductWhenProductExists() {
+		Product productToUpdate = new Product("1", "Laptop", 15, 899.99);
+		Product existingProduct = new Product("1", "Laptop", 10, 999.99);
+		when(productRepository.findById("1")).
+			thenReturn(existingProduct);
+		productController.updateProduct(productToUpdate);
+		InOrder inOrder = inOrder(productRepository, productView);
+		inOrder.verify(productRepository).update(productToUpdate);
+		inOrder.verify(productView).productUpdated(productToUpdate);
+	}
+
+	@Test
+	public void testUpdateProductWhenProductDoesNotExist() {
+		Product product = new Product("1", "Laptop", 15, 899.99);
+		when(productRepository.findById("1")).
+			thenReturn(null);
+		productController.updateProduct(product);
+		verify(productView)
+			.showErrorProductNotFound("No existing product with id 1", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+	}
 }

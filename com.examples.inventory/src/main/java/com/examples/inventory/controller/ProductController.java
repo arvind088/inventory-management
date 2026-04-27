@@ -30,6 +30,17 @@ public class ProductController {
 		productView.productAdded(product);
 	}
 
+	public void updateProduct(Product product) {
+		if (productRepository.findById(product.getId()) == null) {
+			productView.showErrorProductNotFound("No existing product with id " + product.getId(),
+				product);
+			return;
+		}
+
+		productRepository.update(product);
+		productView.productUpdated(product);
+	}
+
 	public void deleteProduct(Product product) {
 		if (productRepository.findById(product.getId()) == null) {
 			productView.showErrorProductNotFound("No existing product with id " + product.getId(),

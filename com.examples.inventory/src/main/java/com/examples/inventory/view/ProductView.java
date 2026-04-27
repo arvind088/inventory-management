@@ -10,6 +10,8 @@ public interface ProductView {
 
 	void productAdded(Product product);
 
+	void productUpdated(Product product);
+
 	void productRemoved(Product product);
 
 	void showError(String message, Product product);
