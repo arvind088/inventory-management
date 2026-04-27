@@ -10,6 +10,7 @@ import com.examples.inventory.model.Product;
 import com.examples.inventory.repository.ProductRepository;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 
 public class MongoProductRepository implements ProductRepository {
 
@@ -49,7 +50,11 @@ public class MongoProductRepository implements ProductRepository {
 
 	@Override
 	public Product findById(String id) {
-		throw new UnsupportedOperationException("Not implemented yet");
+		Document d = productCollection.find(Filters.eq("id", id)).first();
+		if (d != null) {
+			return fromDocumentToProduct(d);
+		}
+		return null;
 	}
 
 	@Override
