@@ -10,5 +10,9 @@ public interface ProductView {
 
 	void productAdded(Product product);
 
+	void productRemoved(Product product);
+
 	void showError(String message, Product product);
+
+	void showErrorProductNotFound(String message, Product product);
 }
