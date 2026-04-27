@@ -6,6 +6,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +43,16 @@ public class ProductControllerTest {
 	@After
 	public void releaseMocks() throws Exception {
 		closeable.close();
+	}
+
+	@Test
+	public void testAllProducts() {
+		List<Product> products = asList(new Product("1", "Laptop", 10, 999.99));
+		when(productRepository.findAll())
+			.thenReturn(products);
+		productController.allProducts();
+		verify(productView)
+			.showAllProducts(products);
 	}
 
 	@Test

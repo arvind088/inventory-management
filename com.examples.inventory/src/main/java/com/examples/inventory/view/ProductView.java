@@ -1,8 +1,12 @@
 package com.examples.inventory.view;
 
+import java.util.List;
+
 import com.examples.inventory.model.Product;
 
 public interface ProductView {
+
+	void showAllProducts(List<Product> products);
 
 	void productAdded(Product product);
 
