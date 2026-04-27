@@ -70,6 +70,22 @@ public class MongoProductRepositoryTestcontainersIT {
 				new Product("2", "Mouse", 20, 19.99));
 	}
 
+	@Test
+	public void testFindByIdWhenProductExists() {
+		addTestProductToDatabase("1", "Laptop", 10, 999.99);
+		addTestProductToDatabase("2", "Mouse", 20, 19.99);
+		assertThat(productRepository.findById("2"))
+			.usingRecursiveComparison()
+			.isEqualTo(new Product("2", "Mouse", 20, 19.99));
+	}
+
+	@Test
+	public void testFindByIdWhenProductDoesNotExist() {
+		addTestProductToDatabase("1", "Laptop", 10, 999.99);
+		assertThat(productRepository.findById("2"))
+			.isNull();
+	}
+
 	private void addTestProductToDatabase(String id, String name, int quantity, double price) {
 		productCollection.insertOne(
 			new Document()
