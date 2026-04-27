@@ -77,4 +77,26 @@ public class ProductControllerTest {
 			.showError("Already existing product with id 1", existingProduct);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
+
+	@Test
+	public void testDeleteProductWhenProductExists() {
+		Product productToDelete = new Product("1", "Laptop", 10, 999.99);
+		when(productRepository.findById("1")).
+			thenReturn(productToDelete);
+		productController.deleteProduct(productToDelete);
+		InOrder inOrder = inOrder(productRepository, productView);
+		inOrder.verify(productRepository).delete("1");
+		inOrder.verify(productView).productRemoved(productToDelete);
+	}
+
+	@Test
+	public void testDeleteProductWhenProductDoesNotExist() {
+		Product product = new Product("1", "Laptop", 10, 999.99);
+		when(productRepository.findById("1")).
+			thenReturn(null);
+		productController.deleteProduct(product);
+		verify(productView)
+			.showErrorProductNotFound("No existing product with id 1", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+	}
 }

@@ -29,4 +29,15 @@ public class ProductController {
 		productRepository.save(product);
 		productView.productAdded(product);
 	}
+
+	public void deleteProduct(Product product) {
+		if (productRepository.findById(product.getId()) == null) {
+			productView.showErrorProductNotFound("No existing product with id " + product.getId(),
+				product);
+			return;
+		}
+
+		productRepository.delete(product.getId());
+		productView.productRemoved(product);
+	}
 }
