@@ -86,6 +86,16 @@ public class MongoProductRepositoryTestcontainersIT {
 			.isNull();
 	}
 
+	@Test
+	public void testUpdate() {
+		addTestProductToDatabase("1", "Laptop", 10, 999.99);
+		Product editedProduct = new Product("1", "Gaming Laptop", 5, 1299.99);
+		productRepository.update(editedProduct);
+		assertThat(readAllProductsFromDatabase())
+			.usingRecursiveFieldByFieldElementComparator()
+			.containsExactly(editedProduct);
+	}
+
 	private void addTestProductToDatabase(String id, String name, int quantity, double price) {
 		productCollection.insertOne(
 			new Document()
