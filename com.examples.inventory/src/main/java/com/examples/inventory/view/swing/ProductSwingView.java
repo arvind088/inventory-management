@@ -76,6 +76,14 @@ public class ProductSwingView extends JFrame implements ProductView {
 
 	@Override
 	public void showAllProducts(List<Product> products) {
+		DefaultTableModel tableModel = (DefaultTableModel) productTable.getModel();
+		tableModel.setRowCount(0);
+		products.forEach(product -> tableModel.addRow(new Object[] {
+			product.getId(),
+			product.getName(),
+			product.getQuantity(),
+			product.getPrice()
+		}));
 	}
 
 	@Override
