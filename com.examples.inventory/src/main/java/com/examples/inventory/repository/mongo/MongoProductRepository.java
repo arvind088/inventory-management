@@ -24,12 +24,7 @@ public class MongoProductRepository implements ProductRepository {
 
 	@Override
 	public void save(Product product) {
-		productCollection.insertOne(
-			new Document()
-				.append("id", product.getId())
-				.append("name", product.getName())
-				.append("quantity", product.getQuantity())
-				.append("price", product.getPrice()));
+		productCollection.insertOne(fromProductToDocument(product));
 	}
 
 	@Override
@@ -48,6 +43,14 @@ public class MongoProductRepository implements ProductRepository {
 			(double) d.get("price"));
 	}
 
+	private Document fromProductToDocument(Product product) {
+		return new Document()
+			.append("id", product.getId())
+			.append("name", product.getName())
+			.append("quantity", product.getQuantity())
+			.append("price", product.getPrice());
+	}
+
 	@Override
 	public Product findById(String id) {
 		Document d = productCollection.find(Filters.eq("id", id)).first();
@@ -59,7 +62,9 @@ public class MongoProductRepository implements ProductRepository {
 
 	@Override
 	public void update(Product product) {
-		throw new UnsupportedOperationException("Not implemented yet");
+		productCollection.replaceOne(
+			Filters.eq("id", product.getId()),
+			fromProductToDocument(product));
 	}
 
 	@Override
