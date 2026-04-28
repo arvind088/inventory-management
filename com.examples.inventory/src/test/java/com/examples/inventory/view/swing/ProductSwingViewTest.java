@@ -32,13 +32,25 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	@Test
 	public void testInitialControls() {
 		window.table("productTable");
-		window.textBox("idTextField");
-		window.textBox("nameTextField");
-		window.textBox("quantityTextField");
-		window.textBox("priceTextField");
+		window.textBox("idField");
+		window.textBox("nameField");
+		window.textBox("quantityField");
+		window.textBox("priceField");
 		window.button("addButton").requireText("Add");
 		window.button("updateButton").requireText("Update");
 		window.button("deleteButton").requireText("Delete");
+		window.button("refreshButton").requireText("Refresh");
+	}
+
+	@Test
+	public void testAddButtonIsEnabledOnlyWhenAllFieldsArePopulated() {
+		window.button("addButton").requireDisabled();
+		window.textBox("idField").enterText("1");
+		window.textBox("nameField").enterText("Laptop");
+		window.textBox("quantityField").enterText("10");
+		window.button("addButton").requireDisabled();
+		window.textBox("priceField").enterText("999.99");
+		window.button("addButton").requireEnabled();
 	}
 
 	@Test
