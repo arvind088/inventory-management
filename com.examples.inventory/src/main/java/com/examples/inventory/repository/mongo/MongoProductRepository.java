@@ -69,6 +69,6 @@ public class MongoProductRepository implements ProductRepository {
 
 	@Override
 	public void delete(String id) {
-		throw new UnsupportedOperationException("Not implemented yet");
+		productCollection.deleteOne(Filters.eq("id", id));
 	}
 }
