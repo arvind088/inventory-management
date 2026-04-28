@@ -1,0 +1,204 @@
+package com.examples.inventory.view.swing;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+
+import com.examples.inventory.model.Product;
+import com.examples.inventory.view.ProductView;
+
+public class ProductSwingView extends JFrame implements ProductView {
+
+	private static final long serialVersionUID = 1L;
+
+	private JTable productTable;
+	private JTextField idTextField;
+	private JTextField nameTextField;
+	private JTextField quantityTextField;
+	private JTextField priceTextField;
+	private JButton addButton;
+	private JButton updateButton;
+	private JButton deleteButton;
+	private JButton refreshButton;
+	private JLabel messageLabel;
+
+	public ProductSwingView() {
+		setTitle("Inventory Management");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setSize(700, 400);
+		setLocationByPlatform(true);
+		JPanel contentPane = new JPanel(new BorderLayout(10, 10));
+		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		setContentPane(contentPane);
+		add(createTitleLabel(), BorderLayout.NORTH);
+		add(createMainPanel(), BorderLayout.CENTER);
+	}
+
+	private JLabel createTitleLabel() {
+		JLabel titleLabel = new JLabel("Inventory Management", SwingConstants.CENTER);
+		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16F));
+		titleLabel.setOpaque(true);
+		titleLabel.setBackground(new Color(65, 72, 78));
+		titleLabel.setForeground(Color.WHITE);
+		titleLabel.setBorder(new EmptyBorder(6, 0, 6, 0));
+		return titleLabel;
+	}
+
+	private JPanel createMainPanel() {
+		JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+		mainPanel.add(createAddPanel(), BorderLayout.NORTH);
+		mainPanel.add(createTablePanel(), BorderLayout.CENTER);
+		mainPanel.add(createActionsPanel(), BorderLayout.SOUTH);
+		return mainPanel;
+	}
+
+	private JScrollPane createTablePanel() {
+		productTable = new JTable(new DefaultTableModel(
+			new Object[] { "Id", "Name", "Quantity", "Price" }, 0));
+		productTable.setName("productTable");
+		productTable.setFillsViewportHeight(true);
+		productTable.setRowHeight(24);
+		productTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane tableScrollPane = new JScrollPane(productTable);
+		tableScrollPane.setBorder(BorderFactory.createTitledBorder("Products"));
+		return tableScrollPane;
+	}
+
+	private JPanel createAddPanel() {
+		JPanel addPanel = new JPanel(new BorderLayout(5, 8));
+		addPanel.setBorder(BorderFactory.createTitledBorder("Add Product"));
+		JPanel fieldsPanel = new JPanel(new GridLayout(4, 2, 8, 5));
+		idTextField = createTextField("idField");
+		nameTextField = createTextField("nameField");
+		quantityTextField = createTextField("quantityField");
+		priceTextField = createTextField("priceField");
+		addButton = createButton("addButton", "Add");
+		addButton.setEnabled(false);
+		addTextFieldListeners();
+		fieldsPanel.add(new JLabel("Id"));
+		fieldsPanel.add(idTextField);
+		fieldsPanel.add(new JLabel("Name"));
+		fieldsPanel.add(nameTextField);
+		fieldsPanel.add(new JLabel("Quantity"));
+		fieldsPanel.add(quantityTextField);
+		fieldsPanel.add(new JLabel("Price"));
+		fieldsPanel.add(priceTextField);
+		addPanel.add(fieldsPanel, BorderLayout.CENTER);
+		addPanel.add(addButton, BorderLayout.SOUTH);
+		return addPanel;
+	}
+
+	private JPanel createActionsPanel() {
+		JPanel actionsPanel = new JPanel(new BorderLayout(5, 5));
+		JPanel buttonsPanel = new JPanel(new GridLayout(3, 1, 0, 5));
+		updateButton = createButton("updateButton", "Update");
+		deleteButton = createButton("deleteButton", "Delete");
+		refreshButton = createButton("refreshButton", "Refresh");
+		buttonsPanel.add(updateButton);
+		buttonsPanel.add(deleteButton);
+		buttonsPanel.add(refreshButton);
+		messageLabel = new JLabel(" ");
+		messageLabel.setName("messageLabel");
+		actionsPanel.add(buttonsPanel, BorderLayout.CENTER);
+		actionsPanel.add(messageLabel, BorderLayout.SOUTH);
+		return actionsPanel;
+	}
+
+	private JTextField createTextField(String name) {
+		JTextField textField = new JTextField();
+		textField.setName(name);
+		return textField;
+	}
+
+	private JButton createButton(String name, String text) {
+		JButton button = new JButton(text);
+		button.setName(name);
+		return button;
+	}
+
+	private void addTextFieldListeners() {
+		DocumentListener listener = new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				updateAddButton();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateAddButton();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				updateAddButton();
+			}
+		};
+		idTextField.getDocument().addDocumentListener(listener);
+		nameTextField.getDocument().addDocumentListener(listener);
+		quantityTextField.getDocument().addDocumentListener(listener);
+		priceTextField.getDocument().addDocumentListener(listener);
+	}
+
+	private void updateAddButton() {
+		addButton.setEnabled(
+			!idTextField.getText().isBlank() &&
+			!nameTextField.getText().isBlank() &&
+			!quantityTextField.getText().isBlank() &&
+			!priceTextField.getText().isBlank());
+	}
+
+	@Override
+	public void showAllProducts(List<Product> products) {
+		DefaultTableModel tableModel = (DefaultTableModel) productTable.getModel();
+		tableModel.setRowCount(0);
+		products.forEach(product -> tableModel.addRow(new Object[] {
+			product.getId(),
+			product.getName(),
+			product.getQuantity(),
+			product.getPrice()
+		}));
+	}
+
+	@Override
+	public void productAdded(Product product) {
+		messageLabel.setText("Added product with id " + product.getId());
+	}
+
+	@Override
+	public void productUpdated(Product product) {
+		messageLabel.setText("Updated product with id " + product.getId());
+	}
+
+	@Override
+	public void productRemoved(Product product) {
+		messageLabel.setText("Deleted product with id " + product.getId());
+	}
+
+	@Override
+	public void showError(String message, Product product) {
+		messageLabel.setText(message);
+	}
+
+	@Override
+	public void showErrorProductNotFound(String message, Product product) {
+		messageLabel.setText(message);
+	}
+}
