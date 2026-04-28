@@ -96,6 +96,16 @@ public class MongoProductRepositoryTestcontainersIT {
 			.containsExactly(editedProduct);
 	}
 
+	@Test
+	public void testDelete() {
+		addTestProductToDatabase("1", "Laptop", 10, 999.99);
+		addTestProductToDatabase("2", "Mouse", 20, 19.99);
+		productRepository.delete("1");
+		assertThat(readAllProductsFromDatabase())
+			.usingRecursiveFieldByFieldElementComparator()
+			.containsExactly(new Product("2", "Mouse", 20, 19.99));
+	}
+
 	private void addTestProductToDatabase(String id, String name, int quantity, double price) {
 		productCollection.insertOne(
 			new Document()
