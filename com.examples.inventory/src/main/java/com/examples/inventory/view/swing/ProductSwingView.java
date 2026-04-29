@@ -2,7 +2,6 @@ package com.examples.inventory.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.List;
@@ -22,6 +21,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
+import com.examples.inventory.controller.ProductController;
 import com.examples.inventory.model.Product;
 import com.examples.inventory.view.ProductView;
 
@@ -39,17 +39,22 @@ public class ProductSwingView extends JFrame implements ProductView {
 	private JButton deleteButton;
 	private JButton refreshButton;
 	private JLabel messageLabel;
+	private transient ProductController productController;
 
 	public ProductSwingView() {
 		setTitle("Inventory Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(700, 400);
+		setSize(700, 500);
 		setLocationByPlatform(true);
 		JPanel contentPane = new JPanel(new BorderLayout(10, 10));
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
 		add(createTitleLabel(), BorderLayout.NORTH);
 		add(createMainPanel(), BorderLayout.CENTER);
+	}
+
+	public void setProductController(ProductController productController) {
+		this.productController = productController;
 	}
 
 	private JLabel createTitleLabel() {
@@ -92,6 +97,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 		priceTextField = createTextField("priceField");
 		addButton = createButton("addButton", "Add");
 		addButton.setEnabled(false);
+		addButton.addActionListener(e -> productController.newProduct(productFromFields()));
 		addTextFieldListeners();
 		fieldsPanel.add(new JLabel("Id"));
 		fieldsPanel.add(idTextField);
@@ -112,6 +118,14 @@ public class ProductSwingView extends JFrame implements ProductView {
 		updateButton = createButton("updateButton", "Update");
 		deleteButton = createButton("deleteButton", "Delete");
 		refreshButton = createButton("refreshButton", "Refresh");
+		updateButton.addActionListener(e -> productController.updateProduct(productFromFields()));
+		deleteButton.addActionListener(e -> {
+			Product selectedProduct = selectedProductFromTable();
+			if (selectedProduct != null) {
+				productController.deleteProduct(selectedProduct);
+			}
+		});
+		refreshButton.addActionListener(e -> productController.allProducts());
 		buttonsPanel.add(updateButton);
 		buttonsPanel.add(deleteButton);
 		buttonsPanel.add(refreshButton);
@@ -163,6 +177,27 @@ public class ProductSwingView extends JFrame implements ProductView {
 			!nameTextField.getText().isBlank() &&
 			!quantityTextField.getText().isBlank() &&
 			!priceTextField.getText().isBlank());
+	}
+
+	private Product productFromFields() {
+		return new Product(
+			idTextField.getText(),
+			nameTextField.getText(),
+			Integer.parseInt(quantityTextField.getText()),
+			Double.parseDouble(priceTextField.getText()));
+	}
+
+	private Product selectedProductFromTable() {
+		int selectedRow = productTable.getSelectedRow();
+		if (selectedRow == -1) {
+			return null;
+		}
+		DefaultTableModel tableModel = (DefaultTableModel) productTable.getModel();
+		return new Product(
+			tableModel.getValueAt(selectedRow, 0).toString(),
+			tableModel.getValueAt(selectedRow, 1).toString(),
+			Integer.parseInt(tableModel.getValueAt(selectedRow, 2).toString()),
+			Double.parseDouble(tableModel.getValueAt(selectedRow, 3).toString()));
 	}
 
 	@Override
