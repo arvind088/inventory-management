@@ -44,8 +44,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 	public ProductSwingView() {
 		setTitle("Inventory Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(700, 500);
-		setLocationByPlatform(true);
+		setBounds(100, 100, 700, 500);
 		JPanel contentPane = new JPanel(new BorderLayout(10, 10));
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
@@ -204,26 +203,34 @@ public class ProductSwingView extends JFrame implements ProductView {
 	public void showAllProducts(List<Product> products) {
 		DefaultTableModel tableModel = (DefaultTableModel) productTable.getModel();
 		tableModel.setRowCount(0);
-		products.forEach(product -> tableModel.addRow(new Object[] {
-			product.getId(),
-			product.getName(),
-			product.getQuantity(),
-			product.getPrice()
-		}));
+		products.forEach(this::addProductToTable);
 	}
 
 	@Override
 	public void productAdded(Product product) {
+		addProductToTable(product);
 		messageLabel.setText("Added product with id " + product.getId());
 	}
 
 	@Override
 	public void productUpdated(Product product) {
+		int row = findRowByProductId(product.getId());
+		if (row != -1) {
+			DefaultTableModel tableModel = (DefaultTableModel) productTable.getModel();
+			tableModel.setValueAt(product.getId(), row, 0);
+			tableModel.setValueAt(product.getName(), row, 1);
+			tableModel.setValueAt(product.getQuantity(), row, 2);
+			tableModel.setValueAt(product.getPrice(), row, 3);
+		}
 		messageLabel.setText("Updated product with id " + product.getId());
 	}
 
 	@Override
 	public void productRemoved(Product product) {
+		int row = findRowByProductId(product.getId());
+		if (row != -1) {
+			((DefaultTableModel) productTable.getModel()).removeRow(row);
+		}
 		messageLabel.setText("Deleted product with id " + product.getId());
 	}
 
@@ -235,5 +242,24 @@ public class ProductSwingView extends JFrame implements ProductView {
 	@Override
 	public void showErrorProductNotFound(String message, Product product) {
 		messageLabel.setText(message);
+	}
+
+	private void addProductToTable(Product product) {
+		((DefaultTableModel) productTable.getModel()).addRow(new Object[] {
+			product.getId(),
+			product.getName(),
+			product.getQuantity(),
+			product.getPrice()
+		});
+	}
+
+	private int findRowByProductId(String id) {
+		DefaultTableModel tableModel = (DefaultTableModel) productTable.getModel();
+		for (int row = 0; row < tableModel.getRowCount(); row++) {
+			if (id.equals(tableModel.getValueAt(row, 0))) {
+				return row;
+			}
+		}
+		return -1;
 	}
 }

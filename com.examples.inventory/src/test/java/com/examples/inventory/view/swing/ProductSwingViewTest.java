@@ -110,9 +110,41 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 			view.showAllProducts(List.of(
 				new Product("1", "Laptop", 10, 999.99),
 				new Product("2", "Mouse", 20, 19.99))));
-		String[][] contents = window.table("productTable").contents();
-		assertThat(contents).isDeepEqualTo(new String[][] {
+		assertTableContainsExactly(new String[][] {
 			{ "1", "Laptop", "10", "999.99" },
+			{ "2", "Mouse", "20", "19.99" }
+		});
+	}
+
+	@Test
+	public void testProductAddedAddsProductToTheTable() {
+		GuiActionRunner.execute(() ->
+			view.productAdded(new Product("1", "Laptop", 10, 999.99)));
+		assertTableContainsExactly(new String[][] {
+			{ "1", "Laptop", "10", "999.99" }
+		});
+	}
+
+	@Test
+	public void testProductUpdatedUpdatesProductInTheTable() {
+		GuiActionRunner.execute(() -> {
+			view.showAllProducts(List.of(new Product("1", "Laptop", 10, 999.99)));
+			view.productUpdated(new Product("1", "Gaming Laptop", 5, 1299.99));
+		});
+		assertTableContainsExactly(new String[][] {
+			{ "1", "Gaming Laptop", "5", "1299.99" }
+		});
+	}
+
+	@Test
+	public void testProductRemovedRemovesProductFromTheTable() {
+		GuiActionRunner.execute(() -> {
+			view.showAllProducts(List.of(
+				new Product("1", "Laptop", 10, 999.99),
+				new Product("2", "Mouse", 20, 19.99)));
+			view.productRemoved(new Product("1", "Laptop", 10, 999.99));
+		});
+		assertTableContainsExactly(new String[][] {
 			{ "2", "Mouse", "20", "19.99" }
 		});
 	}
@@ -122,5 +154,10 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		assertThat(product.getName()).isEqualTo(name);
 		assertThat(product.getQuantity()).isEqualTo(quantity);
 		assertThat(product.getPrice()).isEqualTo(price);
+	}
+
+	private void assertTableContainsExactly(String[][] expectedContents) {
+		assertThat(window.table("productTable").contents())
+			.isDeepEqualTo(expectedContents);
 	}
 }
