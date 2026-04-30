@@ -44,8 +44,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 	public ProductSwingView() {
 		setTitle("Inventory Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(700, 500);
-		setLocationByPlatform(true);
+		setBounds(100, 100, 700, 500);
 		JPanel contentPane = new JPanel(new BorderLayout(10, 10));
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
