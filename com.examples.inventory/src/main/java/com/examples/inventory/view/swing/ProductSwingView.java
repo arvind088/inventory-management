@@ -44,9 +44,9 @@ public class ProductSwingView extends JFrame implements ProductView {
 	public ProductSwingView() {
 		setTitle("Inventory Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 700, 500);
+		setBounds(100, 100, 700, 430);
 		JPanel contentPane = new JPanel(new BorderLayout(10, 10));
-		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		contentPane.setBorder(new EmptyBorder(8, 10, 8, 10));
 		setContentPane(contentPane);
 		add(createTitleLabel(), BorderLayout.NORTH);
 		add(createMainPanel(), BorderLayout.CENTER);
@@ -58,16 +58,16 @@ public class ProductSwingView extends JFrame implements ProductView {
 
 	private JLabel createTitleLabel() {
 		JLabel titleLabel = new JLabel("Inventory Management", SwingConstants.CENTER);
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16F));
+		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 15F));
 		titleLabel.setOpaque(true);
 		titleLabel.setBackground(new Color(65, 72, 78));
 		titleLabel.setForeground(Color.WHITE);
-		titleLabel.setBorder(new EmptyBorder(6, 0, 6, 0));
+		titleLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
 		return titleLabel;
 	}
 
 	private JPanel createMainPanel() {
-		JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+		JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
 		mainPanel.add(createAddPanel(), BorderLayout.NORTH);
 		mainPanel.add(createTablePanel(), BorderLayout.CENTER);
 		mainPanel.add(createActionsPanel(), BorderLayout.SOUTH);
@@ -87,9 +87,9 @@ public class ProductSwingView extends JFrame implements ProductView {
 	}
 
 	private JPanel createAddPanel() {
-		JPanel addPanel = new JPanel(new BorderLayout(5, 8));
+		JPanel addPanel = new JPanel(new BorderLayout(5, 5));
 		addPanel.setBorder(BorderFactory.createTitledBorder("Add Product"));
-		JPanel fieldsPanel = new JPanel(new GridLayout(4, 2, 8, 5));
+		JPanel fieldsPanel = new JPanel(new GridLayout(4, 2, 8, 3));
 		idTextField = createTextField("idField");
 		nameTextField = createTextField("nameField");
 		quantityTextField = createTextField("quantityField");
@@ -112,8 +112,8 @@ public class ProductSwingView extends JFrame implements ProductView {
 	}
 
 	private JPanel createActionsPanel() {
-		JPanel actionsPanel = new JPanel(new BorderLayout(5, 5));
-		JPanel buttonsPanel = new JPanel(new GridLayout(3, 1, 0, 5));
+		JPanel actionsPanel = new JPanel(new BorderLayout(5, 4));
+		JPanel buttonsPanel = new JPanel(new GridLayout(1, 3, 6, 0));
 		updateButton = createButton("updateButton", "Update");
 		deleteButton = createButton("deleteButton", "Delete");
 		refreshButton = createButton("refreshButton", "Refresh");
@@ -138,6 +138,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 	private JTextField createTextField(String name) {
 		JTextField textField = new JTextField();
 		textField.setName(name);
+		textField.setColumns(10);
 		return textField;
 	}
 
@@ -209,6 +210,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 	@Override
 	public void productAdded(Product product) {
 		addProductToTable(product);
+		messageLabel.setForeground(Color.BLACK);
 		messageLabel.setText("Added product with id " + product.getId());
 	}
 
@@ -222,6 +224,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 			tableModel.setValueAt(product.getQuantity(), row, 2);
 			tableModel.setValueAt(product.getPrice(), row, 3);
 		}
+		messageLabel.setForeground(Color.BLACK);
 		messageLabel.setText("Updated product with id " + product.getId());
 	}
 
@@ -231,16 +234,19 @@ public class ProductSwingView extends JFrame implements ProductView {
 		if (row != -1) {
 			((DefaultTableModel) productTable.getModel()).removeRow(row);
 		}
+		messageLabel.setForeground(Color.BLACK);
 		messageLabel.setText("Deleted product with id " + product.getId());
 	}
 
 	@Override
 	public void showError(String message, Product product) {
+		messageLabel.setForeground(Color.RED);
 		messageLabel.setText(message);
 	}
 
 	@Override
 	public void showErrorProductNotFound(String message, Product product) {
+		messageLabel.setForeground(Color.RED);
 		messageLabel.setText(message);
 	}
 
