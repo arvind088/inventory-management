@@ -210,6 +210,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 	@Override
 	public void productAdded(Product product) {
 		addProductToTable(product);
+		messageLabel.setForeground(Color.BLACK);
 		messageLabel.setText("Added product with id " + product.getId());
 	}
 
@@ -223,6 +224,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 			tableModel.setValueAt(product.getQuantity(), row, 2);
 			tableModel.setValueAt(product.getPrice(), row, 3);
 		}
+		messageLabel.setForeground(Color.BLACK);
 		messageLabel.setText("Updated product with id " + product.getId());
 	}
 
@@ -232,16 +234,19 @@ public class ProductSwingView extends JFrame implements ProductView {
 		if (row != -1) {
 			((DefaultTableModel) productTable.getModel()).removeRow(row);
 		}
+		messageLabel.setForeground(Color.BLACK);
 		messageLabel.setText("Deleted product with id " + product.getId());
 	}
 
 	@Override
 	public void showError(String message, Product product) {
+		messageLabel.setForeground(Color.RED);
 		messageLabel.setText(message);
 	}
 
 	@Override
 	public void showErrorProductNotFound(String message, Product product) {
+		messageLabel.setForeground(Color.RED);
 		messageLabel.setText(message);
 	}
 
