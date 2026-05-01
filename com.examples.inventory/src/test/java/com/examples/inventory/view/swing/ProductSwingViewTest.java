@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
 
@@ -14,6 +15,9 @@ import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
 
 import com.examples.inventory.controller.ProductController;
 import com.examples.inventory.model.Product;
@@ -64,6 +68,35 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	}
 
 	@Test
+	public void testAddButtonIsDisabledWhenARequiredFieldIsCleared() {
+		window.textBox("idField").setText("1");
+		window.textBox("nameField").setText("Laptop");
+		window.textBox("quantityField").setText("10");
+		window.textBox("priceField").setText("999.99");
+		window.button("addButton").requireEnabled();
+		window.textBox("idField").deleteText();
+		window.button("addButton").requireDisabled();
+	}
+
+	@Test
+	public void testAddButtonIsUpdatedOnDocumentChange() {
+		window.textBox("idField").setText("1");
+		window.textBox("nameField").setText("Laptop");
+		window.textBox("quantityField").setText("10");
+		window.textBox("priceField").setText("999.99");
+		GuiActionRunner.execute(() -> {
+			AbstractDocument document =
+				(AbstractDocument) window.textBox("idField").target().getDocument();
+			for (DocumentListener listener : document.getDocumentListeners()) {
+				if (listener.getClass().getName().contains(ProductSwingView.class.getName())) {
+					listener.changedUpdate(null);
+				}
+			}
+		});
+		window.button("addButton").requireEnabled();
+	}
+
+	@Test
 	public void testAddButtonNotifiesControllerWithProductFromTextFields() {
 		window.textBox("idField").setText("1");
 		window.textBox("nameField").setText("Laptop");
@@ -96,6 +129,14 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
 		verify(productController, timeout(1000)).deleteProduct(productCaptor.capture());
 		assertProduct(productCaptor.getValue(), "1", "Laptop", 10, 999.99);
+	}
+
+	@Test
+	public void testDeleteButtonDoesNotNotifyControllerWithoutSelectedProduct() {
+		GuiActionRunner.execute(() ->
+			view.showAllProducts(List.of(new Product("1", "Laptop", 10, 999.99))));
+		window.button("deleteButton").click();
+		verifyNoInteractions(productController);
 	}
 
 	@Test
@@ -137,6 +178,18 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	}
 
 	@Test
+	public void testProductUpdatedWhenProductIsNotInTheTableShowsMessageOnly() {
+		GuiActionRunner.execute(() -> {
+			view.showAllProducts(List.of(new Product("1", "Laptop", 10, 999.99)));
+			view.productUpdated(new Product("2", "Mouse", 20, 19.99));
+		});
+		assertTableContainsExactly(new String[][] {
+			{ "1", "Laptop", "10", "999.99" }
+		});
+		window.label("messageLabel").requireText("Updated product with id 2");
+	}
+
+	@Test
 	public void testProductRemovedRemovesProductFromTheTable() {
 		GuiActionRunner.execute(() -> {
 			view.showAllProducts(List.of(
@@ -147,6 +200,32 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		assertTableContainsExactly(new String[][] {
 			{ "2", "Mouse", "20", "19.99" }
 		});
+	}
+
+	@Test
+	public void testProductRemovedWhenProductIsNotInTheTableShowsMessageOnly() {
+		GuiActionRunner.execute(() -> {
+			view.showAllProducts(List.of(new Product("1", "Laptop", 10, 999.99)));
+			view.productRemoved(new Product("2", "Mouse", 20, 19.99));
+		});
+		assertTableContainsExactly(new String[][] {
+			{ "1", "Laptop", "10", "999.99" }
+		});
+		window.label("messageLabel").requireText("Deleted product with id 2");
+	}
+
+	@Test
+	public void testShowErrorShowsMessage() {
+		GuiActionRunner.execute(() ->
+			view.showError("Already existing product with id 1", new Product("1", "Laptop", 10, 999.99)));
+		window.label("messageLabel").requireText("Already existing product with id 1");
+	}
+
+	@Test
+	public void testShowErrorProductNotFoundShowsMessage() {
+		GuiActionRunner.execute(() ->
+			view.showErrorProductNotFound("No existing product with id 1", new Product("1", "Laptop", 10, 999.99)));
+		window.label("messageLabel").requireText("No existing product with id 1");
 	}
 
 	private void assertProduct(Product product, String id, String name, int quantity, double price) {
