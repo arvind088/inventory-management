@@ -16,6 +16,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -43,7 +44,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 
 	public ProductSwingView() {
 		setTitle("Inventory Management");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setBounds(100, 100, 700, 430);
 		JPanel contentPane = new JPanel(new BorderLayout(10, 10));
 		contentPane.setBorder(new EmptyBorder(8, 10, 8, 10));
@@ -246,8 +247,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 
 	@Override
 	public void showErrorProductNotFound(String message, Product product) {
-		messageLabel.setForeground(Color.RED);
-		messageLabel.setText(message);
+		showError(message, product);
 	}
 
 	private void addProductToTable(Product product) {
