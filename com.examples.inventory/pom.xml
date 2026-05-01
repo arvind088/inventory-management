@@ -235,13 +235,14 @@
                         </dependencies>
                         <configuration>
                             <targetClasses>
-                                <param>com.examples.inventory.service.*</param>
-                                <param>com.examples.inventory.repository.*</param>
+                                <param>com.examples.inventory.controller.*</param>
                                 <param>com.examples.inventory.repository.mongo.*</param>
                             </targetClasses>
                             <targetTests>
-                                <param>com.examples.inventory.*</param>
+                                <param>com.examples.inventory.controller.*Test</param>
+                                <param>com.examples.inventory.repository.mongo.*IT</param>
                             </targetTests>
+                            <parseSurefireConfig>false</parseSurefireConfig>
                             <excludedClasses>
                                 <param>com.examples.inventory.model.*</param>
                                 <param>com.examples.inventory.app.swing.InventorySwingApp</param>
