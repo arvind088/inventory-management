@@ -1,4 +1,4 @@
-name: Java CI with Maven in Linux
+name: Java CI with Maven, Docker and SonarCloud in Linux
 
 on:
   push:
@@ -6,25 +6,38 @@ on:
 
 jobs:
   build:
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         # Shallow clones disabled for a better relevancy of SonarQube analysis
         fetch-depth: 0
     - name: Set up JDK
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: 17
         distribution: 'temurin'
     - name: Cache Maven packages
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
-        path: ~/.m2
+        path: |
+          ~/.m2
+          ~/.sonar/cache
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '**/*.yml') }}
         restore-keys: ${{ runner.os }}-m2-
-    - name: Build with Maven
+    - name: Set Maven Additional Goals
       run: >
-        xvfb-run -a ./mvnw verify -B
+        echo "SONARGOAL=sonar:sonar" >> $GITHUB_ENV
+      if: ${{ env.SONAR_TOKEN }}
+    - name: Build with Maven and SonarCloud
+      run: >
+        xvfb-run -a ./mvnw -B verify -Pjacoco $SONARGOAL
+        -Dsonar.organization=arvind088
+        -Dsonar.host.url=https://sonarcloud.io
+        -Dsonar.projectKey=arvind088_inventory-management
       working-directory: com.examples.inventory
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
