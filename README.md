@@ -96,3 +96,8 @@ com.examples.inventory/
   src/it/java         MongoDB integration tests
   src/e2e/java        End-to-end Swing and MongoDB tests
 ```
+
+## References
+
+- [TDD, Build Automation and CI](https://leanpub.com/tdd-buildautomation-ci)
+- [Book examples repository](https://github.com/LorenzoBettini/tdd-buildautomation-ci-book-examples)
