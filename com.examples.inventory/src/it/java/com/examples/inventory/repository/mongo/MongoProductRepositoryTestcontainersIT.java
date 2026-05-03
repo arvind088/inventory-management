@@ -3,7 +3,6 @@ package com.examples.inventory.repository.mongo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.bson.Document;
@@ -123,6 +122,6 @@ public class MongoProductRepositoryTestcontainersIT {
 					"" + d.get("name"),
 					(int) d.get("quantity"),
 					(double) d.get("price")))
-				.collect(Collectors.toList());
+				.toList();
 	}
 }
