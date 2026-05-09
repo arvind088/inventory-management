@@ -24,6 +24,8 @@
         <maven.failsafe.plugin.version>3.5.5</maven.failsafe.plugin.version>
         <build.helper.maven.plugin.version>3.6.1</build.helper.maven.plugin.version>
         <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
+        <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
+        <jaxb.api.version>2.3.1</jaxb.api.version>
         <pitest.maven.plugin.version>1.17.2</pitest.maven.plugin.version>
         <pitest.junit5.plugin.version>1.2.1</pitest.junit5.plugin.version>
         <sonar.maven.plugin.version>3.8.0.2131</sonar.maven.plugin.version>
@@ -258,6 +260,31 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>coveralls</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eluder.coveralls</groupId>
+                        <artifactId>coveralls-maven-plugin</artifactId>
+                        <version>${coveralls.maven.plugin.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>javax.xml.bind</groupId>
+                                <artifactId>jaxb-api</artifactId>
+                                <version>${jaxb.api.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <jacocoReports>
+                                <jacocoReport>${project.build.directory}/site/jacoco/jacoco.xml</jacocoReport>
+                            </jacocoReports>
+                            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

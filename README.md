@@ -1,6 +1,7 @@
 # Inventory Management
 
 [![Java CI with Maven](https://github.com/arvind088/inventory-management/actions/workflows/maven.yml/badge.svg)](https://github.com/arvind088/inventory-management/actions/workflows/maven.yml)
+[![Coverage Status](https://coveralls.io/repos/github/arvind088/inventory-management/badge.svg?branch=main)](https://coveralls.io/github/arvind088/inventory-management?branch=main)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=arvind088_inventory-management&metric=alert_status)](https://sonarcloud.io/project/overview?id=arvind088_inventory-management)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=arvind088_inventory-management&metric=vulnerabilities)](https://sonarcloud.io/component_measures?metric=vulnerabilities&id=arvind088_inventory-management)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=arvind088_inventory-management&metric=bugs)](https://sonarcloud.io/component_measures?metric=bugs&id=arvind088_inventory-management)
