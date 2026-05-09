@@ -8,6 +8,7 @@ jobs:
   build:
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
     runs-on: ubuntu-latest
 
     steps:
@@ -41,3 +42,9 @@ jobs:
       working-directory: com.examples.inventory
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Send coverage to Coveralls
+      run: >
+        ./mvnw -B -Pcoveralls coveralls:report
+        -DrepoToken=${{ secrets.COVERALLS_REPO_TOKEN }}
+      if: ${{ env.COVERALLS_REPO_TOKEN }}
+      working-directory: com.examples.inventory
